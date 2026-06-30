@@ -1,4 +1,4 @@
-"""Dataset loading and OOD construction for the six HNSD benchmarks."""
+"""Dataset loading and OOD construction for the six HyperNSD benchmarks."""
 
 from __future__ import annotations
 
