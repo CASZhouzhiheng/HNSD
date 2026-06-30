@@ -1,4 +1,4 @@
-"""Training and evaluation loops for HNSD."""
+"""Training and evaluation loops for HyperNSD."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from torch.nn import functional as F
 
 from .data import make_task_datasets
 from .metrics import binary_detection_metrics
-from .model import HNSD
+from .model import HyperNSD
 from .operators import IncidenceOperator
 
 
@@ -45,12 +45,12 @@ def _confidence(logits: torch.Tensor, score_type: str) -> torch.Tensor:
 
 
 @torch.no_grad()
-def _mean_logits(model: HNSD, data: dict, samples: int) -> torch.Tensor:
+def _mean_logits(model: HyperNSD, data: dict, samples: int) -> torch.Tensor:
     return torch.stack([model(data["features"], data["operator"], stochastic=True) for _ in range(samples)], dim=0).mean(dim=0)
 
 
 @torch.no_grad()
-def evaluate_ood(model: HNSD, id_data: dict, ood_data: dict, mask_name: str, samples: int, score_type: str) -> dict[str, float]:
+def evaluate_ood(model: HyperNSD, id_data: dict, ood_data: dict, mask_name: str, samples: int, score_type: str) -> dict[str, float]:
     """Evaluate ID-versus-OOD detection with matched test or validation indices."""
     model.eval()
     id_logits, ood_logits = _mean_logits(model, id_data, samples), _mean_logits(model, ood_data, samples)
@@ -68,7 +68,7 @@ def evaluate_ood(model: HNSD, id_data: dict, ood_data: dict, mask_name: str, sam
 
 
 @torch.no_grad()
-def evaluate_misclassification(model: HNSD, data: dict, mask_name: str, samples: int, score_type: str) -> tuple[dict[str, float], float]:
+def evaluate_misclassification(model: HyperNSD, data: dict, mask_name: str, samples: int, score_type: str) -> tuple[dict[str, float], float]:
     """Evaluate correct-versus-incorrect prediction detection."""
     model.eval()
     logits = _mean_logits(model, data, samples)
@@ -91,14 +91,14 @@ def _energy_margin_loss(id_logits: torch.Tensor, ood_logits: torch.Tensor, margi
 
 
 def run_experiment(args) -> dict:
-    """Train HNSD and select the checkpoint with the best validation AUROC."""
+    """Train HyperNSD and select the checkpoint with the best validation AUROC."""
     device = torch.device(args.device if torch.cuda.is_available() and not str(args.device).startswith("cpu") else "cpu")
     set_seed(args.seed)
     id_raw, ood_train_raw, ood_test_raw = make_task_datasets(args)
     id_data = _to_device(id_raw, device)
     ood_train = _to_device(ood_train_raw, device) if ood_train_raw is not None else None
     ood_test = _to_device(ood_test_raw, device) if ood_test_raw is not None else None
-    model = HNSD(id_data["features"].size(-1), id_data["num_classes"], args.hidden_dim, args.steps, args.dt, args.dropout, args.input_dropout, args.noise_scale).to(device)
+    model = HyperNSD(id_data["features"].size(-1), id_data["num_classes"], args.hidden_dim, args.steps, args.dt, args.dropout, args.input_dropout, args.noise_scale).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     best = None
     for epoch in range(1, args.epochs + 1):
