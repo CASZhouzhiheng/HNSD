@@ -46,3 +46,4 @@ HyperNSD/
   results/     Local JSON metrics, ignored by Git
   main.py      Unified experiment entry point
 ```
+
