@@ -1,4 +1,4 @@
-"""HNSD model with incidence-aware drift and stochastic forcing."""
+"""HyperNSD model with incidence-aware drift and stochastic forcing."""
 
 from __future__ import annotations
 
@@ -26,8 +26,8 @@ class IncidenceWeights(nn.Module):
         return torch.sigmoid(self.score(context)) + 1e-4
 
 
-class HNSD(nn.Module):
-    """Euler-Maruyama HNSD encoder and classifier."""
+class HyperNSD(nn.Module):
+    """Euler-Maruyama HyperNSD encoder and classifier."""
 
     def __init__(self, input_dim: int, num_classes: int, hidden_dim: int, steps: int, dt: float, dropout: float, input_dropout: float, noise_scale: float) -> None:
         super().__init__()
