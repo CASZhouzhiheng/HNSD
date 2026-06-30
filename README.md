@@ -1,6 +1,6 @@
-# HNSD: Hypergraph Neural Stochastic Diffusion
+# HyperNSD: Hypergraph Neural Stochastic Diffusion
 
-This repository contains a clean, self-contained implementation of HNSD for:
+This repository contains a clean, self-contained implementation of HyperNSD for:
 
 - OOD detection under label, feature, and structure shifts;
 - misclassification detection on ID test nodes.
@@ -40,8 +40,8 @@ The selected checkpoint is always the epoch with the best **validation AUROC**.
 ## Project layout
 
 ```text
-HNSD/
-  hnsd/        Model, incidence operators, data pipeline, metrics, trainer
+HyperNSD/
+  hypernsd/        Model, incidence operators, data pipeline, metrics, trainer
   data/        Local datasets, ignored by Git
   results/     Local JSON metrics, ignored by Git
   main.py      Unified experiment entry point
